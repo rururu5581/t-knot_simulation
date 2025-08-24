@@ -3,9 +3,12 @@ import { GoogleGenAI } from "@google/genai";
 import type { InputData } from '../types';
 
 const getApiKey = (): string => {
-  const apiKey = process.env.API_KEY;
+  // Viteでビルドされたクライアントサイドのコードでは、
+  // 環境変数は `import.meta.env` から `VITE_` プレフィックス付きでアクセスする必要があります。
+  const apiKey = import.meta.env.VITE_API_KEY;
   if (!apiKey) {
-    throw new Error("API_KEY environment variable not set.");
+    // エラーメッセージもVITE_API_KEYに変更して、デバッグしやすくします。
+    throw new Error("VITE_API_KEY environment variable not set.");
   }
   return apiKey;
 };
