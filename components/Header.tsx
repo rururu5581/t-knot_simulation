@@ -2,7 +2,7 @@ import React from 'react';
 
 const Header: React.FC = () => {
   // より高品質なロゴ画像のURLに変更しました。
-  const logoUrl = 'https://t-knot.com/wp-content/uploads/2022/01/logo-1.png';
+  const logoUrl = 'https://d.kuku.lu/wyabuuuv3';
 
   return (
     <header className="bg-white shadow-md">
