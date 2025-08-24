@@ -8,9 +8,16 @@ interface InputFormProps {
 }
 
 type InputMode = 'simple' | 'detailed';
+type MaritalStatus = 'single' | 'married';
 
 const InputForm: React.FC<InputFormProps> = ({ onDiagnose, isLoading }) => {
   const [mode, setMode] = useState<InputMode>('simple');
+  
+  // Family status
+  const [maritalStatus, setMaritalStatus] = useState<MaritalStatus>('single');
+  const [childrenCount, setChildrenCount] = useState<string>('');
+
+  // Income & Expenses
   const [income, setIncome] = useState<string>('');
   const [simpleExpenses, setSimpleExpenses] = useState<string>('');
   const [savings, setSavings] = useState<string>('');
@@ -75,6 +82,8 @@ const InputForm: React.FC<InputFormProps> = ({ onDiagnose, isLoading }) => {
     }
 
     const data: InputData = {
+      maritalStatus: maritalStatus,
+      childrenCount: parseNumber(childrenCount),
       income: incomeNum,
       expenses: expensesNum,
       savings: savingsNum,
@@ -90,16 +99,16 @@ const InputForm: React.FC<InputFormProps> = ({ onDiagnose, isLoading }) => {
     onDiagnose(data, mode);
   };
   
-  const renderInputField = (label: string, value: string, setValue: (val: string) => void) => (
+  const renderInputField = (label: string, value: string, setValue: (val: string) => void, placeholder = "例: 100000") => (
     <div className="mb-4">
       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={label}>
-        {label} (円)
+        {label}
       </label>
       <input
         id={label}
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#00aeef]"
         type="number"
-        placeholder="例: 100000"
+        placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         min="0"
@@ -127,11 +136,31 @@ const InputForm: React.FC<InputFormProps> = ({ onDiagnose, isLoading }) => {
       </div>
       
       <form onSubmit={handleSubmit}>
-        {renderInputField('毎月の手取り収入', income, setIncome)}
+        <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+           <h3 className="text-lg font-semibold text-gray-800 mb-3">家族構成</h3>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">婚姻状況</label>
+                <div className="flex space-x-4">
+                   <label className="flex items-center">
+                     <input type="radio" name="maritalStatus" value="single" checked={maritalStatus === 'single'} onChange={() => setMaritalStatus('single')} className="form-radio h-4 w-4 text-[#00aeef] focus:ring-[#00aeef]"/>
+                     <span className="ml-2 text-gray-700">独身</span>
+                   </label>
+                   <label className="flex items-center">
+                     <input type="radio" name="maritalStatus" value="married" checked={maritalStatus === 'married'} onChange={() => setMaritalStatus('married')} className="form-radio h-4 w-4 text-[#00aeef] focus:ring-[#00aeef]"/>
+                     <span className="ml-2 text-gray-700">既婚</span>
+                   </label>
+                </div>
+              </div>
+              {renderInputField('お子様の人数 (人)', childrenCount, setChildrenCount, "例: 2")}
+           </div>
+        </div>
+
+        {renderInputField('毎月の手取り収入 (円)', income, setIncome)}
         
         {mode === 'simple' && (
           <>
-            {renderInputField('毎月の支出合計', simpleExpenses, setSimpleExpenses)}
+            {renderInputField('毎月の支出合計 (円)', simpleExpenses, setSimpleExpenses)}
             <div className="mb-6">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 毎月の貯金額 (円)
@@ -148,12 +177,12 @@ const InputForm: React.FC<InputFormProps> = ({ onDiagnose, isLoading }) => {
         
         {mode === 'detailed' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {renderInputField('住居費', housing, setHousing)}
-            {renderInputField('食費', food, setFood)}
-            {renderInputField('水道光熱費', utilities, setUtilities)}
-            {renderInputField('通信費', communication, setCommunication)}
-            {renderInputField('保険料', insurance, setInsurance)}
-            {renderInputField('その他', other, setOther)}
+            {renderInputField('住居費 (円)', housing, setHousing)}
+            {renderInputField('食費 (円)', food, setFood)}
+            {renderInputField('水道光熱費 (円)', utilities, setUtilities)}
+            {renderInputField('通信費 (円)', communication, setCommunication)}
+            {renderInputField('保険料 (円)', insurance, setInsurance)}
+            {renderInputField('その他 (円)', other, setOther)}
              <div className="md:col-span-2 mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 毎月の支出合計 / 貯金額 (円)
