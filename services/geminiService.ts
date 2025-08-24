@@ -22,8 +22,13 @@ const formatNumber = (num: number): string => {
 export const getFinancialAdvice = async (data: InputData, inputType: 'simple' | 'detailed'): Promise<string> => {
   const { income, expenses, savings, detailed } = data;
 
-  let prompt = `あなたは、経験豊富で非常に親しみやすいファイナンシャル・アドバイザーです。ユーザーの家計データに基づき、簡潔でポジティブなワンポイントアドバイスを日本語で生成してください。不安を煽るのではなく、ユーザーが「素敵な未来のために、やってみよう」と思えるような、優しく寄り添う表現を心がけてください。
+  let prompt = `あなたは、経験豊富で非常に親しみやすいファイナンシャル・アドバイザーです。ユーザーの家計データに基づき、ワンポイントアドバイスを自然な日本語で生成してください。不安を煽るのではなく、ユーザーが「素敵な未来のために、やってみよう」と思えるような、優しく寄り添う表現を心がけてください。
+未来が明るくなるような声がけをしてください。そして、明日から始められる簡単な第一歩を提案し、最終目標までの道のりを、達成イメージとともに示してあげてください。全体の文字数は200－300文字が理想。長くなりそうなときは箇条書きで書くなど工夫してください。
 
+ユーザーの家族状況:
+- 婚姻状況: ${maritalStatus === 'married' ? '既婚' : '独身'}
+- お子様の人数: ${childrenCount}人
+  
 ユーザーの家計状況:
 - 毎月の手取り収入: ${formatNumber(income)}円
 - 毎月の支出合計: ${formatNumber(expenses)}円
@@ -42,7 +47,7 @@ export const getFinancialAdvice = async (data: InputData, inputType: 'simple' | 
 `;
   }
 
-  prompt += "\n上記の情報に基づいて、1〜2文程度の、具体的で実行可能なアドバイスを一つだけお願いします。";
+  prompt += "\n上記の情報に基づいて、具体的で実行可能なアドバイスをお願いします。";
 
   try {
     const response = await ai.models.generateContent({
