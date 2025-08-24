@@ -1,0 +1,54 @@
+
+import { GoogleGenAI } from "@google/genai";
+import type { InputData } from '../types';
+
+const getApiKey = (): string => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("API_KEY environment variable not set.");
+  }
+  return apiKey;
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() });
+
+const formatNumber = (num: number): string => {
+  return new Intl.NumberFormat('ja-JP').format(num);
+};
+
+export const getFinancialAdvice = async (data: InputData, inputType: 'simple' | 'detailed'): Promise<string> => {
+  const { income, expenses, savings, detailed } = data;
+
+  let prompt = `あなたは、経験豊富で非常に親しみやすいファイナンシャル・アドバイザーです。ユーザーの家計データに基づき、簡潔でポジティブなワンポイントアドバイスを日本語で生成してください。不安を煽るのではなく、ユーザーが「素敵な未来のために、やってみよう」と思えるような、優しく寄り添う表現を心がけてください。
+
+ユーザーの家計状況:
+- 毎月の手取り収入: ${formatNumber(income)}円
+- 毎月の支出合計: ${formatNumber(expenses)}円
+- 毎月の貯金額: ${formatNumber(savings)}円
+`;
+
+  if (inputType === 'detailed') {
+    prompt += `
+支出の内訳:
+- 住居費: ${formatNumber(detailed.housing)}円
+- 食費: ${formatNumber(detailed.food)}円
+- 水道光熱費: ${formatNumber(detailed.utilities)}円
+- 通信費: ${formatNumber(detailed.communication)}円
+- 保険料: ${formatNumber(detailed.insurance)}円
+- その他: ${formatNumber(detailed.other)}円
+`;
+  }
+
+  prompt += "\n上記の情報に基づいて、1〜2文程度の、具体的で実行可能なアドバイスを一つだけお願いします。";
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+    return response.text;
+  } catch (error) {
+    console.error("Error generating financial advice:", error);
+    return "AIによるアドバイスの生成中にエラーが発生しました。しばらくしてからもう一度お試しください。";
+  }
+};
