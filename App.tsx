@@ -32,7 +32,11 @@ const App: React.FC = () => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } catch (err) {
-      setError('診断中にエラーが発生しました。');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('診断中に予期せぬエラーが発生しました。');
+      }
       console.error(err);
     } finally {
       setIsLoading(false);
