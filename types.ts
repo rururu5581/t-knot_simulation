@@ -1,5 +1,7 @@
 
 export interface SimpleInput {
+  maritalStatus: 'single' | 'married';
+  childrenCount: number;
   income: number;
   expenses: number;
   savings: number;
