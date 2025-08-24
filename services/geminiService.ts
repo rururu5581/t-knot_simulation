@@ -1,5 +1,5 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "@google/gemini";
 import type { InputData } from '../types';
 
 const getApiKey = (): string => {
