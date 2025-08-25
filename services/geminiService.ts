@@ -30,8 +30,7 @@ export const getFinancialAdvice = async (data: InputData, inputType: 'simple' | 
 
   const { maritalStatus, childrenCount, income, expenses, savings, detailed } = data;
 
-  let prompt = ` あなたは、経験豊富で非常に親しみやすいファイナンシャル・アドバイザーです。ユーザーの家計データに基づき、ワンポイントアドバイスを自然な日本語で生成してください。不安を煽るのではなく、ユーザーが「素敵な未来のために、やってみよう」と思えるような、優しく寄り添う表現を心がけてください。
-未来が明るくなるような声がけをしてください。そして、明日から始められる簡単な第一歩を提案し、最終目標までの道のりを、達成イメージとともに示してあげてください。全体の文字数は200－300文字が理想。長くなりそうなときは箇条書きで書くなど工夫してください。
+  let prompt = `あなたは、経験豊富で非常に親しみやすいファイナンシャル・アドバイザーです。ユーザーの家計データに基づき、簡潔でポジティブなワンポイントアドバイスを自然な日本語で生成してください。不安を煽るのではなく、ユーザーが「素敵な未来のために、やってみよう」と思えるような、優しく寄り添う表現を心がけてください。明日から始められること、少しハードル高いけどがんばってみるとよいこと、など具体的にアドバイスをお願いします。 
 
 ユーザーの家族状況:
 - 婚姻状況: ${maritalStatus === 'married' ? '既婚' : '独身'}
@@ -57,9 +56,12 @@ export const getFinancialAdvice = async (data: InputData, inputType: 'simple' | 
 
   prompt += "\n上記の情報に基づいて、具体的で実行可能なアドバイスをお願いします。";
 
+  // 環境変数からモデル名を取得し、設定がなければデフォルトのモデルを使用する
+  const modelName = import.meta.env.VITE_GEMINI_MODEL_NAME || 'gemini-2.5-flash';
+
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: modelName,
       contents: prompt,
     });
     
